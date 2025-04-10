@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2025-04-10T02:23:18.509Z",
+    "latitude": 14.4197726,
+    "longitude": 121.0186983,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+  },
+  {
+    "timestamp": "2025-04-10T02:24:24.583Z",
+    "latitude": 14.5457152,
+    "longitude": 121.0089472,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+  },
+  {
+    "timestamp": "2025-04-10T02:24:52.151Z",
+    "latitude": 14.5457152,
+    "longitude": 121.0089472,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+  }
+]
