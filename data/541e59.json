@@ -1,0 +1,29 @@
+[
+  {
+    "timestamp": "2025-04-10T02:32:11.320Z",
+    "latitude": 14.4197722,
+    "longitude": 121.0186824,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+  },
+  {
+    "timestamp": "2025-04-10T02:33:07.064Z",
+    "latitude": 14.6084,
+    "longitude": 120.9753,
+    "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36"
+  },
+  {
+    "timestamp": "2025-04-10T02:33:07.066Z",
+    "error": "Using IP-based location",
+    "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36"
+  },
+  {
+    "timestamp": "2025-04-10T02:34:12.736Z",
+    "error": "Using IP-based location",
+    "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36"
+  },
+  {
+    "timestamp": "2025-04-10T02:35:25.117Z",
+    "error": "Using IP-based location",
+    "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36"
+  }
+]
