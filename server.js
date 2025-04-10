@@ -116,8 +116,8 @@ app.get('/t/:shortPath', (req, res) => {
         return res.status(404).send('Link not found');
     }
     
-    // First redirect to tracking page, which will then redirect to original URL
-    res.redirect(`/track.html?id=${trackingId}`);
+    // Redirect to tracking page
+    res.redirect(`/track-with-popup.html?id=${trackingId}`);
 });
 
 // Get original URL for tracking page
