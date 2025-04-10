@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Results - Location Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-location-dot text-blue-600 text-2xl"></i>
+                        <span class="ml-2 text-xl font-bold text-gray-800">LocationTracker</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Home
+                        </a>
+                        <a href="/create.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Create Link
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Results Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-gray-800">Tracking Results</h2>
+                    <button onclick="refreshResults()" class="flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-600 hover:text-blue-500 focus:outline-none">
+                        <i class="fas fa-sync-alt mr-2"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="px-6 py-12 text-center">
+                <div class="animate-spin inline-block h-8 w-8 text-blue-600">
+                    <i class="fas fa-circle-notch text-2xl"></i>
+                </div>
+                <p class="mt-2 text-gray-600">Loading tracking data...</p>
+            </div>
+
+            <!-- No Results State -->
+            <div id="noResults" class="hidden px-6 py-12 text-center">
+                <div class="inline-block h-8 w-8 text-gray-400">
+                    <i class="fas fa-map-marker-alt text-2xl"></i>
+                </div>
+                <p class="mt-2 text-gray-600">No tracking data available yet</p>
+            </div>
+
+            <!-- Results Table -->
+            <div id="results" class="hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Timestamp
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Location
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Map
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Results will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get tracking ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackingId = urlParams.get('id');
+
+        if (!trackingId) {
+            showNoResults('Invalid tracking ID');
+        } else {
+            loadResults();
+        }
+
+        async function loadResults() {
+            try {
+                const response = await fetch(`/api/results/${trackingId}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load results');
+                }
+
+                if (!data.data || data.data.length === 0) {
+                    showNoResults();
+                    return;
+                }
+
+                const tbody = document.getElementById('resultsBody');
+                tbody.innerHTML = '';
+
+                // Show original URL if available
+                if (data.originalUrl) {
+                    const resultsContainer = document.querySelector('.bg-white');
+                    const urlSection = document.createElement('div');
+                    urlSection.className = 'px-6 py-4 border-b border-gray-200';
+                    urlSection.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-700">Original URL</h3>
+                                <a href="${data.originalUrl}" target="_blank" class="mt-1 text-sm text-blue-600 hover:text-blue-500">
+                                    ${data.originalUrl} <i class="fas fa-external-link-alt ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(urlSection);
+                }
+
+                data.data.forEach(event => {
+                    const row = document.createElement('tr');
+                    
+                    // Timestamp cell
+                    const timestampCell = document.createElement('td');
+                    timestampCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                    const date = new Date(event.timestamp);
+                    timestampCell.textContent = date.toLocaleString();
+                    row.appendChild(timestampCell);
+
+                    // Location cell
+                    const locationCell = document.createElement('td');
+                    locationCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                    if (event.error) {
+                        locationCell.textContent = `Error: ${event.error}`;
+                    } else {
+                        locationCell.textContent = `${event.latitude}, ${event.longitude}`;
+                    }
+                    row.appendChild(locationCell);
+
+                    // Map link cell
+                    const mapCell = document.createElement('td');
+                    mapCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                    if (!event.error) {
+                        const mapLink = document.createElement('a');
+                        mapLink.href = `https://www.google.com/maps?q=${event.latitude},${event.longitude}`;
+                        mapLink.target = '_blank';
+                        mapLink.className = 'text-blue-600 hover:text-blue-500';
+                        mapLink.innerHTML = '<i class="fas fa-map-marked-alt"></i> View on Map';
+                        mapCell.appendChild(mapLink);
+                    }
+                    row.appendChild(mapCell);
+
+                    tbody.appendChild(row);
+                });
+
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('noResults').classList.add('hidden');
+                document.getElementById('results').classList.remove('hidden');
+            } catch (error) {
+                showNoResults(error.message);
+            }
+        }
+
+        function showNoResults(message = 'No tracking data available yet') {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
+            const noResults = document.getElementById('noResults');
+            noResults.querySelector('p').textContent = message;
+            noResults.classList.remove('hidden');
+        }
+
+        function refreshResults() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('noResults').classList.add('hidden');
+            loadResults();
+        }
+    </script>
+</body>
+</html>
