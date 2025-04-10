@@ -150,17 +150,13 @@
                     // Location cell
                     const locationCell = document.createElement('td');
                     locationCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
-                    if (event.error) {
-                        locationCell.textContent = `Error: ${event.error}`;
-                    } else {
-                        locationCell.textContent = `${event.latitude}, ${event.longitude}`;
-                    }
+                    locationCell.textContent = event.location || 'Location not available';
                     row.appendChild(locationCell);
 
                     // Map link cell
                     const mapCell = document.createElement('td');
                     mapCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
-                    if (!event.error) {
+                    if (event.latitude && event.longitude) {
                         const mapLink = document.createElement('a');
                         mapLink.href = `https://www.google.com/maps?q=${event.latitude},${event.longitude}`;
                         mapLink.target = '_blank';
