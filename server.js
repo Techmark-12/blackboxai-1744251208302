@@ -135,6 +135,7 @@ app.get('/api/original-url/:id', (req, res) => {
 app.post('/api/track/:id', (req, res) => {
     const { id } = req.params;
     const { latitude, longitude, error } = req.body;
+    const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     
     if (!trackingData[id]) {
         return res.status(404).json({ error: 'Tracking ID not found' });
@@ -142,11 +143,15 @@ app.post('/api/track/:id', (req, res) => {
 
     const trackingEvent = {
         timestamp: new Date().toISOString(),
-        latitude,
-        longitude,
-        error,
-        userAgent: req.headers['user-agent']
+        location: error ? `IP: ${clientIP}` : `${latitude}, ${longitude}`,
+        userAgent: req.headers['user-agent'],
+        ip: clientIP
     };
+
+    if (!error && latitude && longitude) {
+        trackingEvent.latitude = latitude;
+        trackingEvent.longitude = longitude;
+    }
 
     trackingData[id].push(trackingEvent);
     
