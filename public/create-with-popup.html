@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Tracking Link - Location Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-location-dot text-blue-600 text-2xl"></i>
+                        <span class="ml-2 text-xl font-bold text-gray-800">LocationTracker</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Home
+                        </a>
+                        <a href="/create.html" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Create Link
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="px-6 py-8">
+                    <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">
+                        Create Tracking Link
+                    </h2>
+                    <p class="text-center text-gray-600 mb-8">
+                        Generate a link that tracks the location of anyone who opens it
+                    </p>
+
+                    <form id="createForm" class="space-y-6">
+                        <div>
+                            <label for="targetUrl" class="block text-sm font-medium text-gray-700">
+                                Target URL
+                            </label>
+                            <div class="mt-1">
+                                <input type="url" name="targetUrl" id="targetUrl" required
+                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                                    placeholder="https://facebook.com/your-post-url">
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">
+                                Enter the URL you want to track (e.g., Facebook post, website, etc.)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700">
+                                Link Description (Optional)
+                            </label>
+                            <div class="mt-1">
+                                <input type="text" name="description" id="description"
+                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                                    placeholder="e.g., Facebook Post Track">
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit"
+                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                                <i class="fas fa-link mr-2"></i>
+                                Generate Tracking Link
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Success Message -->
+                <div id="success" class="hidden px-6 py-4 bg-green-50 border-t border-green-200">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        <span class="font-medium text-green-800">Tracking Link Generated Successfully</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Short Tracking Link
+                            </label>
+                            <div class="flex rounded-md shadow-sm">
+                                <input type="text" id="shortUrl" readonly
+                                    class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md text-sm border-gray-300">
+                                <button onclick="copyToClipboard('shortUrl')"
+                                    class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">
+                                Shortened URL for easy sharing
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const targetUrl = document.getElementById('targetUrl').value;
+            
+            try {
+                const response = await fetch('/api/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ targetUrl })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create tracking link');
+                }
+
+                const data = await response.json();
+                
+                // Update short URL input
+                const shortUrlInput = document.getElementById('shortUrl');
+                // Replace track.html with track-with-popup.html in the URL
+                const shortUrl = data.shortUrl.replace('track.html', 'track-with-popup.html');
+                shortUrlInput.value = shortUrl;
+
+                // Show success message
+                document.getElementById('success').classList.remove('hidden');
+            } catch (error) {
+                alert('Error creating tracking link: ' + error.message);
+            }
+        });
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const button = element.nextElementSibling;
+            const icon = button.querySelector('i');
+            icon.className = 'fas fa-check';
+            setTimeout(() => {
+                icon.className = 'fas fa-copy';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
