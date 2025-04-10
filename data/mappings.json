@@ -71,6 +71,14 @@
     [
       "78b5",
       "fdc513"
+    ],
+    [
+      "90af",
+      "ad0b1e"
+    ],
+    [
+      "daed",
+      "c4db6d"
     ]
   ],
   "originalUrls": [
@@ -145,6 +153,14 @@
     [
       "fdc513",
       "https://www.youtube.com/watch?v=ef2pNVTrN5Q"
+    ],
+    [
+      "ad0b1e",
+      "https://facebook.com/posts/test-with-popup"
+    ],
+    [
+      "c4db6d",
+      "https://facebook.com/posts/test-explicit-popup"
     ]
   ],
   "shortToLongId": [
@@ -219,6 +235,14 @@
     [
       "78b5",
       "fdc513"
+    ],
+    [
+      "90af",
+      "ad0b1e"
+    ],
+    [
+      "daed",
+      "c4db6d"
     ]
   ]
 }
