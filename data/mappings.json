@@ -79,6 +79,10 @@
     [
       "daed",
       "c4db6d"
+    ],
+    [
+      "e8e8",
+      "87fd92"
     ]
   ],
   "originalUrls": [
@@ -161,6 +165,10 @@
     [
       "c4db6d",
       "https://facebook.com/posts/test-explicit-popup"
+    ],
+    [
+      "87fd92",
+      "https://www.facebook.com/photo/?fbid=1052772050227485&set=a.229687329202632"
     ]
   ],
   "shortToLongId": [
@@ -243,6 +251,10 @@
     [
       "daed",
       "c4db6d"
+    ],
+    [
+      "e8e8",
+      "87fd92"
     ]
   ]
 }
