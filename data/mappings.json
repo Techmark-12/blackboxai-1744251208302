@@ -83,6 +83,14 @@
     [
       "e8e8",
       "87fd92"
+    ],
+    [
+      "241c",
+      "4ea169"
+    ],
+    [
+      "5a01",
+      "5034b1"
     ]
   ],
   "originalUrls": [
@@ -169,6 +177,14 @@
     [
       "87fd92",
       "https://www.facebook.com/photo/?fbid=1052772050227485&set=a.229687329202632"
+    ],
+    [
+      "4ea169",
+      "https://facebook.com/posts/test-direct-location"
+    ],
+    [
+      "5034b1",
+      "https://www.youtube.com/watch?v=ef2pNVTrN5Q"
     ]
   ],
   "shortToLongId": [
@@ -255,6 +271,14 @@
     [
       "e8e8",
       "87fd92"
+    ],
+    [
+      "241c",
+      "4ea169"
+    ],
+    [
+      "5a01",
+      "5034b1"
     ]
   ]
 }
